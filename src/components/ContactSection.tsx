@@ -2,27 +2,48 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Phone, Mail, Clock, Send, CheckCircle } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { Phone, Mail, Clock, MessageCircle } from "lucide-react";
+
+const WHATSAPP_NUMBER = "34627903277";
 
 export function ContactSection() {
-  const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    date: "",
+    guests: "",
+    message: "",
+  });
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsSubmitting(true);
     
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // Build WhatsApp message
+    const lines = [
+      `🍷 *Nueva solicitud de reserva*`,
+      ``,
+      `👤 *Nombre:* ${formData.name}`,
+      `📞 *Teléfono:* ${formData.phone}`,
+    ];
     
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-    toast({
-      title: "¡Mensaje enviado!",
-      description: "Nos pondremos en contacto contigo lo antes posible.",
-    });
+    if (formData.email) lines.push(`📧 *Email:* ${formData.email}`);
+    if (formData.date) lines.push(`📅 *Fecha:* ${formData.date}`);
+    if (formData.guests) lines.push(`👥 *Personas:* ${formData.guests}`);
+    if (formData.message) {
+      lines.push(``);
+      lines.push(`💬 *Mensaje:*`);
+      lines.push(formData.message);
+    }
+    
+    const text = encodeURIComponent(lines.join("\n"));
+    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`;
+    
+    window.open(whatsappUrl, "_blank");
   };
 
   return (
@@ -48,17 +69,14 @@ export function ContactSection() {
             <div className="glass-card p-6">
               <Phone className="w-10 h-10 text-primary mb-4" />
               <h3 className="font-display text-xl font-semibold text-foreground mb-2">
-                Teléfono
+                Teléfono / WhatsApp
               </h3>
               <p className="text-muted-foreground mb-3">
-                Llámanos para reservar o consultar
+                Llámanos o escríbenos por WhatsApp
               </p>
-              <a href="tel:+34928000000" className="text-lg font-semibold text-primary hover:underline">
-                +34 928 00 00 00
+              <a href="tel:+34627903277" className="text-lg font-semibold text-primary hover:underline">
+                +34 627 90 32 77
               </a>
-              <p className="text-sm text-muted-foreground mt-2">
-                (Añadir número real)
-              </p>
             </div>
 
             <div className="glass-card p-6">
@@ -92,20 +110,7 @@ export function ContactSection() {
           {/* Contact Form */}
           <div className="lg:col-span-3">
             <div className="glass-card p-8">
-              {isSubmitted ? (
-                <div className="text-center py-12">
-                  <CheckCircle className="w-16 h-16 text-secondary mx-auto mb-4" />
-                  <h3 className="font-display text-2xl font-semibold text-foreground mb-2">
-                    ¡Gracias por contactarnos!
-                  </h3>
-                  <p className="text-muted-foreground mb-6">
-                    Hemos recibido tu mensaje. Te responderemos lo antes posible.
-                  </p>
-                  <Button onClick={() => setIsSubmitted(false)} variant="outline">
-                    Enviar otro mensaje
-                  </Button>
-                </div>
-              ) : (
+              {(
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
@@ -119,6 +124,8 @@ export function ContactSection() {
                         required
                         placeholder="Tu nombre"
                         className="bg-background"
+                        value={formData.name}
+                        onChange={handleChange}
                       />
                     </div>
                     <div>
@@ -132,6 +139,8 @@ export function ContactSection() {
                         required
                         placeholder="+34 600 000 000"
                         className="bg-background"
+                        value={formData.phone}
+                        onChange={handleChange}
                       />
                     </div>
                   </div>
@@ -146,6 +155,8 @@ export function ContactSection() {
                       type="email"
                       placeholder="tu@email.com"
                       className="bg-background"
+                      value={formData.email}
+                      onChange={handleChange}
                     />
                   </div>
 
@@ -159,6 +170,8 @@ export function ContactSection() {
                         name="date"
                         type="date"
                         className="bg-background"
+                        value={formData.date}
+                        onChange={handleChange}
                       />
                     </div>
                     <div>
@@ -173,6 +186,8 @@ export function ContactSection() {
                         max="20"
                         placeholder="2"
                         className="bg-background"
+                        value={formData.guests}
+                        onChange={handleChange}
                       />
                     </div>
                   </div>
@@ -187,27 +202,22 @@ export function ContactSection() {
                       rows={4}
                       placeholder="Cuéntanos cualquier detalle o petición especial..."
                       className="bg-background resize-none"
+                      value={formData.message}
+                      onChange={handleChange}
                     />
                   </div>
 
                   <Button
                     type="submit"
                     size="lg"
-                    className="w-full"
-                    disabled={isSubmitting}
+                    className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white"
                   >
-                    {isSubmitting ? (
-                      "Enviando..."
-                    ) : (
-                      <>
-                        <Send className="w-4 h-4 mr-2" />
-                        Enviar Solicitud
-                      </>
-                    )}
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                    Enviar por WhatsApp
                   </Button>
 
                   <p className="text-xs text-muted-foreground text-center">
-                    Te contactaremos para confirmar tu reserva. 
+                    Se abrirá WhatsApp con tu mensaje listo para enviar.
                     Los campos marcados con * son obligatorios.
                   </p>
                 </form>
