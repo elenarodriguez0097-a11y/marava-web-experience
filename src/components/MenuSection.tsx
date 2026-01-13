@@ -108,11 +108,26 @@ export function MenuSection() {
           ))}
         </div>
 
-        {/* Note */}
-        <p className="text-center text-muted-foreground text-sm mt-12">
-          Consulta nuestra carta completa en el restaurante. 
-          Precios y disponibilidad sujetos a temporada.
-        </p>
+        {/* QR Card */}
+        <div className="mt-12 glass-card p-8 text-center max-w-lg mx-auto">
+          <div className="w-16 h-16 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
+            <svg className="w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h2M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+            </svg>
+          </div>
+          <h3 className="font-display text-xl font-semibold text-foreground mb-2">
+            Carta Digital
+          </h3>
+          <p className="text-muted-foreground text-sm mb-4">
+            Escanea el código QR en tu mesa para ver nuestra carta completa con precios actualizados.
+          </p>
+          <a 
+            href="/carta" 
+            className="inline-block bg-primary text-primary-foreground px-6 py-2 rounded-full font-medium hover:bg-primary/90 transition-colors text-sm"
+          >
+            Ver carta completa →
+          </a>
+        </div>
       </div>
     </section>
   );
