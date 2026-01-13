@@ -16,6 +16,9 @@ export function ContactSection() {
     message: "",
   });
 
+  const [whatsappUrl, setWhatsappUrl] = useState<string | null>(null);
+  const [showManualWhatsAppLink, setShowManualWhatsAppLink] = useState(false);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
@@ -43,14 +46,19 @@ export function ContactSection() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     // Validate required fields
     if (!formData.name.trim() || !formData.phone.trim()) {
       return;
     }
-    
-    // Navigate directly to WhatsApp
-    window.location.href = buildWhatsAppUrl();
+
+    const url = buildWhatsAppUrl();
+    setWhatsappUrl(url);
+
+    // Important: wa.me refuses to load inside iframes.
+    // Open in a new tab/window; if the browser blocks popups, show a manual link.
+    const opened = window.open(url, "_blank", "noopener,noreferrer");
+    setShowManualWhatsAppLink(!opened);
   };
 
   return (
@@ -222,6 +230,22 @@ export function ContactSection() {
                     <MessageCircle className="w-4 h-4 mr-2" />
                     Enviar por WhatsApp
                   </Button>
+
+                  {showManualWhatsAppLink && whatsappUrl && (
+                    <div className="text-center">
+                      <a
+                        href={whatsappUrl}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        className="text-sm font-semibold text-primary hover:underline"
+                      >
+                        Abrir WhatsApp manualmente
+                      </a>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Si tu navegador bloquea ventanas emergentes, usa este enlace.
+                      </p>
+                    </div>
+                  )}
 
                   <p className="text-xs text-muted-foreground text-center">
                     Se abrirá WhatsApp con tu mensaje listo para enviar.
