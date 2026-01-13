@@ -20,10 +20,7 @@ export function ContactSection() {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    
-    // Build WhatsApp message
+  const buildWhatsAppUrl = () => {
     const lines = [
       `🍷 *Nueva solicitud de reserva*`,
       ``,
@@ -41,9 +38,19 @@ export function ContactSection() {
     }
     
     const text = encodeURIComponent(lines.join("\n"));
-    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`;
+    return `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`;
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     
-    window.open(whatsappUrl, "_blank");
+    // Validate required fields
+    if (!formData.name.trim() || !formData.phone.trim()) {
+      return;
+    }
+    
+    // Navigate directly to WhatsApp
+    window.location.href = buildWhatsAppUrl();
   };
 
   return (
